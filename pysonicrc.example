@@ -1,0 +1,8 @@
+[general]
+
+username: test
+password: test
+server: https://localhost/subsonic
+
+[playback]
+backend: mad
