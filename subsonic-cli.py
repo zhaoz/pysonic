@@ -14,6 +14,11 @@ from pysonic.player import SubPlayer
 def prettyPrint(json):
     print simplejson.dumps(json, sort_keys=True, indent=4 * ' ')
 
+def makeArray(obj):
+    if type(obj) is not list:
+        return [obj,]
+    return obj
+
 class PySubCli(object):
 
     def __init__(self, username=None, password=None, server=None, backend="mad"):
@@ -55,7 +60,14 @@ class PySubCli(object):
                 }
 
         result = self.api.call_search2(query=query)
-        prettyPrint(result['searchResult2']['song'])
+        songs = makeArray(result['searchResult2']['song'])
+
+        cnt = 0
+        for song in songs:
+            cnt += 1
+            print "%d. %s - %s - %s - %s" % (cnt, song['album'],
+                    song['track'], song['artist'], song['title'])
+
 
     def search_artist(self, options):
         query = {
@@ -63,15 +75,12 @@ class PySubCli(object):
                 }
         result = self.api.call_search2(query=query)
 
-        artists = result['searchResult2']['artist']
-
-        if type(artists) is not list:
-            artists = [artists,]
+        artists = makeArray(result['searchResult2']['artist'])
 
         cnt = 0
         for artist in artists:
             cnt += 1
-            print "%s. %s" % (cnt, artist['name'])
+            print "%d. %s" % (cnt, artist['name'])
 
 
     def parseArgs(self, args):
