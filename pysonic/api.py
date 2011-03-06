@@ -89,7 +89,9 @@ class Subsonic(object):
         return resp
 
     def json_handler(self, resp):
-        return simplejson.load(resp)
+        js = simplejson.load(resp)
+
+        return js["subsonic-response"]
 
     def print_handler(self, resp):
         print resp.read()
