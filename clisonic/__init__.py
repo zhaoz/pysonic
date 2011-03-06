@@ -15,34 +15,34 @@ class Clisonic(object):
                  username=None, password=None):
         self.uri_parts = urlparse.urlparse(uri)
 
+        self.username = (self.uri_parts.username, username)[username != None]
+        self.password = (self.uri_parts.password, password)[password != None]
+
+        self.base_url = urlparse.urlunsplit(
+                urlparse.SplitResult(self.uri_parts.scheme, self.uri_parts.netloc,
+                    self.uri_parts.path, "", ""))
+
         self.params = {
                     'v': version,
                     'c': client,
-                    'f': ('xml', 'json')[json]
+                    'f': ('xml', 'json')[json],
+                    'u': self.username,
+                    'p': self.password
                 }
 
-        if self.uri_parts.scheme == 'https':
-            self.conn = httplib.HTTPSConnection
-        else:
-            self.conn = httplib.HTTPConnection
+        # WHY YOU STILL WORK!?
+        #self._init_opener()
 
-        self.username = (self.uri_parts.username, username)[username != None]
-        self.password = (self.uri_parts.password, password)[password != None]
-        self.uri_parts.username = ""
-        self.uri_parts.password = ""
-
-        self.base_url = urlparse.urlunparse(self.uri_parts)
-
-        self.passman = urllib2.HTTPPasswordMgrWithDeafultRealm()
+    def _init_opener(self):
+        self.passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
 
         self.passman.add_password(None, self.buildUrl(),
                 self.username, self.password)
-
-        self.auth_handler = urllib2.HTTPBaseicAuthHandler(self.passman)
+        self.auth_handler = urllib2.HTTPBasicAuthHandler(self.passman)
 
         self.opener = urllib2.build_opener(self.auth_handler)
 
-        urllib2.install_opener(opener)
+        urllib2.install_opener(self.opener)
 
 
     def buildUrl(self, method="", query={}):
@@ -51,9 +51,14 @@ class Clisonic(object):
             if name not in query:
                 query[name] = val
 
-        return "%s/rest/%s%s" % (self.base_url, method, urllib.urlencode(query))
+        path = '%s/rest/%s.view' % (self.uri_parts.path, method)
 
-    def _request(self, url, data=None, headers=None):
+        url = urlparse.urlunsplit((self.uri_parts.scheme, self.uri_parts.netloc,
+                path, urllib.urlencode(query), ""))
+
+        return url
+
+    def _request(self, url, data=None, headers={}):
         req = urllib2.Request(url)
 
         for key in headers:
@@ -61,10 +66,34 @@ class Clisonic(object):
 
         return req
 
-
-    def ping(self):
-        url = self.buildUrl('ping')
+    def callMethod(self, method):
+        url = self.buildUrl(method)
         req = self._request(url)
-        resp = urllib2.urlopen(req)
+        response = urllib2.urlopen(req)
 
-        print response.read()
+        return response
+
+    def __getattr__(self, method):
+        if not method[:5] == "call_":
+            raise AttributeError("No method")
+
+        method = method[5:]
+
+        def wrapped_call(*args, **kwargs):
+            resp = self.callMethod(method)
+
+            after = 'handle_%s' % (method)
+            ret = None
+
+            if hasattr(self, after):
+                ret = getattr(self, after)(resp)
+            else:
+                ret = self.print_handler(resp)
+
+            return ret
+
+        return wrapped_call
+
+    def print_handler(self, resp):
+        print resp.read()
+
