@@ -9,7 +9,7 @@ import urllib
 import urllib2
 import urlparse
 
-class SubsoniceAPI(object):
+class SubsonicAPI(object):
 
     def __init__(self, uri, version="1.5.0", client="clisonic", json=True,
                  username=None, password=None, debug=False):

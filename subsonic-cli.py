@@ -5,7 +5,7 @@ import simplejson
 import mad
 import pyaudio
 
-import clisonic
+from pysonic import SubsonicAPI
 
 USER="test"
 PW='test'
@@ -17,7 +17,7 @@ def prettyPrint(json):
 class SubsonicPlayer(object):
 
     def __init__(self):
-        self.sub = clisonic.SubsoniceAPI(URL, username=USER, password=PW)
+        self.sub = SubsonicAPI(URL, username=USER, password=PW)
 
         ret = self.sub.call_search(query={"artist": "Yelle"})
 
