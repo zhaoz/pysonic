@@ -9,7 +9,7 @@ import urllib
 import urllib2
 import urlparse
 
-class Clisonic(object):
+class SubsoniceAPI(object):
 
     def __init__(self, uri, version="1.5.0", client="clisonic", json=True,
                  username=None, password=None):
@@ -66,12 +66,27 @@ class Clisonic(object):
 
         return req
 
-    def callMethod(self, method):
-        url = self.buildUrl(method)
-        req = self._request(url)
+    def callMethod(self, method, query={}, headers={}):
+        url = self.buildUrl(method, query=query)
+        print url
+        req = self._request(url, headers=headers)
         response = urllib2.urlopen(req)
 
         return response
+
+    def handle_search(self, resp):
+        js = self.json_handler(resp)
+
+        return js["subsonic-response"]["searchResult"]
+
+    def handle_stream(self, resp):
+        return resp
+
+    def json_handler(self, resp):
+        return simplejson.load(resp)
+
+    def print_handler(self, resp):
+        print resp.read()
 
     def __getattr__(self, method):
         if not method[:5] == "call_":
@@ -80,7 +95,7 @@ class Clisonic(object):
         method = method[5:]
 
         def wrapped_call(*args, **kwargs):
-            resp = self.callMethod(method)
+            resp = self.callMethod(method, *args, **kwargs)
 
             after = 'handle_%s' % (method)
             ret = None
@@ -88,12 +103,9 @@ class Clisonic(object):
             if hasattr(self, after):
                 ret = getattr(self, after)(resp)
             else:
-                ret = self.print_handler(resp)
+                ret = self.json_handler(resp)
 
             return ret
 
         return wrapped_call
-
-    def print_handler(self, resp):
-        print resp.read()
 
