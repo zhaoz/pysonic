@@ -12,8 +12,10 @@ def prettyPrint(json):
 class PySubCli(object):
 
     def __init__(self, username=None, password=None, server=None):
-        self.player = SubPlayer(username=username, password=password,
+        self.api = Subsonic(username=username, password=password,
                 server=server)
+
+        self.player = SubPlayer(subsonic=self.api)
 
 def main():
     user_config = RawConfigParser()

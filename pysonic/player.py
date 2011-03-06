@@ -11,9 +11,8 @@ import pyaudio
 
 class SubPlayer(object):
 
-    def __init__(self, username=None, password=None, server=None):
-        self.sub = Subsonic(server=server, username=username,
-                password=password)
+    def __init__(self, subsonic=None):
+        self.sub = subsonic
 
         ret = self.sub.call_search(query={"artist": "Yelle"})
 
