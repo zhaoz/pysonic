@@ -4,7 +4,8 @@
 __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
 
 from optparse import OptionParser
-import sys
+import readline
+import shlex
 
 import simplejson
 
@@ -27,8 +28,6 @@ class PySubCli(object):
     def __init__(self, username=None, password=None, server=None, backend="mad"):
         self.api = Subsonic(username=username, password=password,
                 server=server)
-
-        self.parseArgs(sys.argv[1:])
 
         self.player = SubPlayer(subsonic=self.api, playend=backend)
 
@@ -86,7 +85,12 @@ class PySubCli(object):
             print "%d. %s" % (cnt, artist['name'])
 
 
-    def parseArgs(self, args):
+    def execArgs(self, args):
         if args[0] == 'search':
             self.search(args[1:])
+
+    def shell(self):
+        while True:
+            raw = raw_input(">>> ")
+            self.execArgs(shlex.split(raw))
 

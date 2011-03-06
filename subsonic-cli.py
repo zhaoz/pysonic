@@ -2,6 +2,7 @@
 
 from ConfigParser import RawConfigParser
 import os
+import sys
 
 from pysonic.cli import PySubCli
 
@@ -16,6 +17,13 @@ def main():
         config[name] = user_config.get('general', name)
 
     psc = PySubCli(backend=user_config.get('playback', 'backend'), **config)
+
+    args = sys.argv[1:]
+
+    if args[0] == 'shell':
+        psc.shell()
+    else:
+        psc.execArgs(args)
 
 
 if __name__ == "__main__":
