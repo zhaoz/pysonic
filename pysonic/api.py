@@ -9,7 +9,7 @@ import urllib
 import urllib2
 import urlparse
 
-class SubsonicAPI(object):
+class Subsonic(object):
 
     def __init__(self, uri, version="1.5.0", client="clisonic", json=True,
                  username=None, password=None, debug=False):
@@ -29,6 +29,8 @@ class SubsonicAPI(object):
                     'u': self.username,
                     'p': self.password
                 }
+
+        self.debug = debug
 
         # WHY YOU STILL WORK!?
         #self._init_opener()
@@ -69,7 +71,7 @@ class SubsonicAPI(object):
     def callMethod(self, method, query={}, headers={}):
         url = self.buildUrl(method, query=query)
 
-        if debug:
+        if self.debug:
             print "Calling method: %s" % (url)
 
         req = self._request(url, headers=headers)
