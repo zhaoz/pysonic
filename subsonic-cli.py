@@ -1,53 +1,31 @@
 #!/usr/bin/python2
 
-import simplejson
-
-import mad
-import pyaudio
+import os
+from ConfigParser import RawConfigParser
 
 from pysonic.api import Subsonic
-
-USER="test"
-PW='test'
-URL="https://localhost/subsonic"
+from pysonic.player import SubPlayer
 
 def prettyPrint(json):
     print simplejson.dumps(json, sort_keys=True, indent=4 * ' ')
 
-class SubsonicPlayer(object):
+class PySubCli(object):
 
-    def __init__(self):
-        self.sub = Subsonic(URL, username=USER, password=PW)
-
-        ret = self.sub.call_search(query={"artist": "Yelle"})
-
-        prettyPrint(ret)
-        self.play(ret["match"])
-
-    def play(self, song):
-
-        sub_stream = self.sub.call_stream(query={"id": song["id"]})
-
-        mf = mad.MadFile(sub_stream)
-
-        p = pyaudio.PyAudio()
-
-        stream = p.open(format=p.get_format_from_width(pyaudio.paInt32),
-                channels = 2,
-                rate = mf.samplerate(),
-                output = True)
-
-        data = mf.read()
-
-        while data != None:
-            stream.write(data)
-            data = mf.read()
-
-        stream.close()
-        p.terminate()
+    def __init__(self, username=None, password=None, server=None):
+        self.player = SubPlayer(username=username, password=password,
+                server=server)
 
 def main():
-    SubsonicPlayer()
+    user_config = RawConfigParser()
+    user_config.read("%s/.pysonicrc" % (os.path.expanduser('~')))
+
+    config = {}
+
+    for name in ('username', 'password', 'server'):
+        config[name] = user_config.get('general', name)
+
+    psc = PySubCli(**config)
+
 
 if __name__ == "__main__":
     main()

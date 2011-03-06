@@ -1,4 +1,4 @@
-"""clisonic library.
+"""pysonic library.
 """
 
 __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
@@ -9,11 +9,12 @@ import urllib
 import urllib2
 import urlparse
 
+
 class Subsonic(object):
 
-    def __init__(self, uri, version="1.5.0", client="clisonic", json=True,
-                 username=None, password=None, debug=False):
-        self.uri_parts = urlparse.urlparse(uri)
+    def __init__(self, server=None, version="1.5.0", client="clisonic",
+            json=True, username=None, password=None, debug=False):
+        self.uri_parts = urlparse.urlparse(server)
 
         self.username = (self.uri_parts.username, username)[username != None]
         self.password = (self.uri_parts.password, password)[password != None]
