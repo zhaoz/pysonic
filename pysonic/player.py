@@ -11,18 +11,24 @@ import pyaudio
 
 class SubPlayer(object):
 
-    def __init__(self, subsonic=None):
+    def __init__(self, subsonic=None, playend="mad"):
         self.sub = subsonic
 
-        ret = self.sub.call_search(query={"artist": "Yelle"})
+        if playend == 'mad':
+            self.backend = MadBackEnd
+        else:
+            self.backend = MadBackEnd
 
-        self.play(ret["match"])
+        #ret = self.sub.call_search(query={"artist": "Yelle"})
+        #self.play(ret["match"])
+
 
     def play(self, song):
-
         sub_stream = self.sub.call_stream(query={"id": song["id"]})
 
-        MadBackEnd(sub_stream).play()
+        inst = self.backend(sub_stream)
+        inst.play()
+
 
 class MadBackEnd(object):
 

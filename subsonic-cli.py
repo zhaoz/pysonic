@@ -11,11 +11,11 @@ def prettyPrint(json):
 
 class PySubCli(object):
 
-    def __init__(self, username=None, password=None, server=None):
+    def __init__(self, username=None, password=None, server=None, backend="mad"):
         self.api = Subsonic(username=username, password=password,
                 server=server)
 
-        self.player = SubPlayer(subsonic=self.api)
+        self.player = SubPlayer(subsonic=self.api, playend=backend)
 
 def main():
     user_config = RawConfigParser()
@@ -23,10 +23,10 @@ def main():
 
     config = {}
 
-    for name in ('username', 'password', 'server'):
+    for name in user_config.options('general'):
         config[name] = user_config.get('general', name)
 
-    psc = PySubCli(**config)
+    psc = PySubCli(backend=user_config.get('playback', 'backend'), **config)
 
 
 if __name__ == "__main__":
