@@ -12,7 +12,7 @@ import urlparse
 class SubsoniceAPI(object):
 
     def __init__(self, uri, version="1.5.0", client="clisonic", json=True,
-                 username=None, password=None):
+                 username=None, password=None, debug=False):
         self.uri_parts = urlparse.urlparse(uri)
 
         self.username = (self.uri_parts.username, username)[username != None]
@@ -68,7 +68,10 @@ class SubsoniceAPI(object):
 
     def callMethod(self, method, query={}, headers={}):
         url = self.buildUrl(method, query=query)
-        print url
+
+        if debug:
+            print "Calling method: %s" % (url)
+
         req = self._request(url, headers=headers)
         response = urllib2.urlopen(req)
 
