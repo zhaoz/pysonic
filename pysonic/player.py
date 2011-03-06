@@ -22,7 +22,15 @@ class SubPlayer(object):
 
         sub_stream = self.sub.call_stream(query={"id": song["id"]})
 
-        mf = mad.MadFile(sub_stream)
+        MadBackEnd(sub_stream).play()
+
+class MadBackEnd(object):
+
+    def __init__(self, mp3_stream):
+        self.mp3_stream = mp3_stream
+
+    def play(self):
+        mf = mad.MadFile(self.mp3_stream)
 
         p = pyaudio.PyAudio()
 
