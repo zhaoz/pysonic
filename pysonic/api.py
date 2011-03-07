@@ -5,6 +5,7 @@ __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
 
 import base64
 import simplejson
+from socket import gethostname
 import urllib
 import urllib2
 import urlparse
@@ -12,9 +13,13 @@ import urlparse
 
 class Subsonic(object):
 
-    def __init__(self, server=None, version="1.5.0", client="clisonic",
+    def __init__(self, server=None, version="1.5.0", client=None,
             json=True, username=None, password=None, debug=False):
+
         self.uri_parts = urlparse.urlparse(server)
+
+        if not client:
+            client = gethostname()
 
         self.username = (self.uri_parts.username, username)[username != None]
         self.password = (self.uri_parts.password, password)[password != None]

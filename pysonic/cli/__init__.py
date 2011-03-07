@@ -18,9 +18,9 @@ from pysonic.cli.search import Search
 class PySubCli(object):
 
     def __init__(self, username=None, password=None, server=None, backend="pulse"):
+
         self.api = Subsonic(username=username, password=password,
                 server=server)
-
         self.player = SubPlayer(subsonic=self.api, backend=backend)
         self.search = Search(self.api)
 
