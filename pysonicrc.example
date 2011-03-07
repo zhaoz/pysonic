@@ -5,4 +5,4 @@ password: test
 server: https://localhost/subsonic
 
 [playback]
-backend: mad
+backend: pulse
