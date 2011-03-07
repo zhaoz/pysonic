@@ -1,12 +1,16 @@
 """pysonic library.
 """
 
+from pysonic import pretty
+
 __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
+
 
 def makeArray(obj):
     if type(obj) is not list:
         return [obj,]
     return obj
+
 
 class Search(object):
     def __init__(self, api):
@@ -30,11 +34,12 @@ class Search(object):
         artists = ArtistList(result['searchResult2']['artist'])
         return artists
 
+
 class SearchList(object):
 
     def __init__(self, entries):
         self.entries = makeArray(entries)
-        self.length = len(entries)
+        self.length = len(self.entries)
 
     def entryString(self, entry):
         return str(entry)
@@ -54,9 +59,20 @@ class SearchList(object):
 
         return "\n".join(strings)
 
+    def __repr__(self):
+        return pretty(self.entries)
+
+    def __len__(self):
+        return len(self.entries)
+
+    def __getitem__(self, key):
+        return self.entries[key]
+
+
 class ArtistList(SearchList):
     def entryString(self, entry):
         return entry['name']
+
 
 class SongList(SearchList):
     def entryString(self, entry):

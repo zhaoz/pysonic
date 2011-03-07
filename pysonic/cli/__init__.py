@@ -8,15 +8,10 @@ import readline
 import shlex
 import sys
 
-import simplejson
-
+from pysonic import pretty
 from pysonic.api import Subsonic
 from pysonic.player import SubPlayer
 from pysonic.cli.search import Search
-
-
-def prettyPrint(json):
-    print simplejson.dumps(json, sort_keys=True, indent=4 * ' ')
 
 
 class PySubCli(object):
@@ -30,7 +25,7 @@ class PySubCli(object):
 
         self.cur_list = None
 
-    def search_args(self, args):
+    def searchArgs(self, args):
         parser = OptionParser()
 
         parser.add_option('-a', '--artist', dest='artist')
@@ -50,18 +45,41 @@ class PySubCli(object):
 
         (options, args) = parser.parse_args(args=args)
 
-        self.cur_list = self.get_list(search_by, options)
+        self.cur_list = self.getList(search_by, options)
         print self.cur_list
 
-    def get_list(self, field, options):
+    def getList(self, field, options):
         if field == 'artist':
             return self.search.search_artist(options)
         elif field == 'song':
             return self.search.search_song(options)
 
+    def dumpEntry(self, args):
+        """Dump json representation."""
+        if not self.cur_list:
+            print "No list to operate on."
+            return
+
+        if len(args) < 1:
+            print repr(self.cur_list)
+            return
+
+        try:
+            num = int(args[0])
+            print pretty(self.cur_list[num])
+        except ValueError, ex:
+            print "Wrong format"
+
     def execArgs(self, args):
-        if args[0] == 'search':
-            self.search_args(args[1:])
+        """Execute commands given on the cli."""
+        cmd = args[0]
+
+        if cmd == 'search':
+            self.searchArgs(args[1:])
+        elif cmd == 'relist':
+            print self.cur_list
+        elif cmd == 'dump':
+            self.dumpEntry(args[1:])
 
     def shell(self):
         while True:
