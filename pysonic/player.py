@@ -19,10 +19,6 @@ class SubPlayer(object):
         else:
             self.backend = MadBackEnd
 
-        #ret = self.sub.call_search(query={"artist": "Yelle"})
-        #self.play(ret["match"])
-
-
     def play(self, song):
         sub_stream = self.sub.call_stream(query={"id": song["id"]})
 
