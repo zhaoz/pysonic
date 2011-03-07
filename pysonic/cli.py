@@ -91,6 +91,10 @@ class PySubCli(object):
 
     def shell(self):
         while True:
-            raw = raw_input(">>> ")
+            try:
+                raw = raw_input(">>> ")
+            except EOFError, ex:
+                print "\nExiting"
+                break
             self.execArgs(shlex.split(raw))
 
