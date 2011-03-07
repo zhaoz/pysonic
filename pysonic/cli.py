@@ -56,6 +56,17 @@ class PySubCli(object):
         elif search_by == 'song':
             self.search_song(options)
 
+    def _print_list(self, strings):
+        total = len(strings)
+
+        fmt = "%%%dd. %%s" % (len(str(total)))
+
+        cnt = 0
+        for string in strings:
+            cnt += 1
+            print fmt % (cnt, string)
+
+
     def search_song(self, options):
         query = {
                 'query': options.song
@@ -64,11 +75,8 @@ class PySubCli(object):
         result = self.api.call_search2(query=query)
         songs = makeArray(result['searchResult2']['song'])
 
-        cnt = 0
-        for song in songs:
-            cnt += 1
-            print "%d. %s - %s - %s - %s" % (cnt, song['album'],
-                    song['track'], song['artist'], song['title'])
+        self._print_list(["%s - %s - %s - %s" % (song['album'],
+            song['track'], song['artist'], song['title']) for song in songs])
 
 
     def search_artist(self, options):
@@ -79,11 +87,7 @@ class PySubCli(object):
 
         artists = makeArray(result['searchResult2']['artist'])
 
-        cnt = 0
-        for artist in artists:
-            cnt += 1
-            print "%d. %s" % (cnt, artist['name'])
-
+        self._print_list([artist['name'] for artist in artists])
 
     def execArgs(self, args):
         if args[0] == 'search':
