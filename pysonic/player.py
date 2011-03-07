@@ -19,8 +19,11 @@ class SubPlayer(object):
         else:
             self.backend = MadBackEnd
 
-    def play(self, song):
-        sub_stream = self.sub.call_stream(query={"id": song["id"]})
+    def play(self, song=None, song_id=None):
+        if not song_id:
+            song_id = song["id"]
+
+        sub_stream = self.sub.call_stream(query={"id": song_id})
 
         inst = self.backend(sub_stream)
         inst.play()
