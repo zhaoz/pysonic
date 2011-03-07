@@ -3,8 +3,8 @@
 
 __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
 
+import ao
 import mad
-import pyaudio
 
 import pysonic.player.base as base
 
@@ -14,18 +14,10 @@ class MadBackend(base.Backend):
     def play(self):
         mf = mad.MadFile(self.mp3_stream)
 
-        p = pyaudio.PyAudio()
+        dev = ao.AudioDevice("pulse", rate=mf.samplerate())
 
-        stream = p.open(format=p.get_format_from_width(pyaudio.paInt32),
-                channels = 2,
-                rate = mf.samplerate(),
-                output = True)
+        buf = mf.read()
+        while buf:
+            dev.play(buf, len(buf))
+            buf = mf.read()
 
-        data = mf.read()
-
-        while data != None:
-            stream.write(data)
-            data = mf.read()
-
-        stream.close()
-        p.terminate()
