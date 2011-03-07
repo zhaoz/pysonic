@@ -3,6 +3,9 @@
 
 __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
 
+import ao
+import mad
+
 from pysonic.api import Subsonic
 
 
@@ -12,10 +15,8 @@ class SubPlayer(object):
         self.sub = subsonic
 
         if playend == 'mad':
-            from pysonic.player.madbackend import MadBackend
             self.backend = MadBackend
         else:
-            from pysonic.player.madbackend import MadBackend
             self.backend = MadBackend
 
     def play(self, song=None, song_id=None):
@@ -26,3 +27,25 @@ class SubPlayer(object):
 
         inst = self.backend(sub_stream)
         inst.play()
+
+
+class Backend(object):
+    def __init__(self, mp3_stream, backend="pulse"):
+        self.mp3_stream = mp3_stream
+        self.backend = backend
+
+    def _playStream(self, stream, sample_rate=None):
+
+        dev = ao.AudioDevice(self.backend, rate=sample_rate)
+
+        buf = stream.read()
+        while buf:
+            dev.play(buf, len(buf))
+            buf = stream.read()
+
+
+class MadBackend(Backend):
+
+    def play(self):
+        mf = mad.MadFile(self.mp3_stream)
+        self._playStream(mf, sample_rate=mf.samplerate())

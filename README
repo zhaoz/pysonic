@@ -1,7 +1,7 @@
 
 == Dependencies ==
  * mad
- * pyaudio
+ * libao
  * simplejson
 	
 
