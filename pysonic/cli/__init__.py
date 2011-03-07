@@ -75,7 +75,7 @@ class PySubCli(object):
         """Play something."""
 
         try:
-            num = int(args[0])
+            num = int(args[0]) - 1
             self.player.play(self.cur_list[num])
             return
         except IndexError, ex:
