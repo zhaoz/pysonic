@@ -105,16 +105,21 @@ class PySubCli(object):
         elif cmd == 'play':
             self.play(args[1:])
 
+    def exit(self, state):
+        # kill any player threads
+        self.player.stop()
+        sys.exit(state)
+
     def shell(self):
         while True:
             try:
                 raw = raw_input(">>> ")
             except EOFError, ex:
                 print "\nExiting"
-                break
+                self.exit(0)
             except KeyboardInterrupt, ex:
                 print "\nInteruptted -- Exiting"
-                sys.exit(0)
+                self.exit(0)
 
             self.execArgs(shlex.split(raw))
 

@@ -17,8 +17,15 @@ class Search(object):
         self.api = api
 
     def search_song(self, options):
+        qs = [options.song,]
+
+        if options.artist:
+            qs.append(options.artist)
+        if options.album:
+            qs.append(options.album)
+
         query = {
-                'query': options.song
+                'query': " ".join(qs)
                 }
 
         result = self.api.call_search2(query=query)

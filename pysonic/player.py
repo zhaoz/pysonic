@@ -3,6 +3,8 @@
 
 __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
 
+import threading
+
 import ao
 import mad
 
@@ -14,34 +16,56 @@ class SubPlayer(object):
     def __init__(self, subsonic=None, backend="pulse"):
         self.sub = subsonic
         self.backend = backend
+        self.cur_play = None
+
+    def getStream(self, song_id):
+        return self.sub.call_stream(query={"id": song_id})
 
     def play(self, song=None, song_id=None):
         if not song_id:
             song_id = song["id"]
 
-        sub_stream = self.sub.call_stream(query={"id": song_id})
+        if self.cur_play:
+            curT = self.cur_play
+            curT.join()
 
-        inst = MadDecoder(sub_stream, backend=self.backend)
-        inst.play()
+        self.cur_play = PlayerThread(self, song_id, backend=self.backend)
+        self.cur_play.start()
+
+    def stop(self):
+        if not self.cur_play:
+            return
+
+        self.cur_play.stop()
+        self.cur_play.join()
 
 
-class Decoder(object):
-    def __init__(self, mp3_stream, backend="pulse"):
-        self.mp3_stream = mp3_stream
+class PlayerThread(threading.Thread):
+
+    def __init__(self, player, song_id, backend="pulse"):
+        self.player = player
+        self.song_id = song_id
         self.backend = backend
 
-    def _playStream(self, stream, sample_rate=None):
+        self._stop = threading.Event()
 
-        dev = ao.AudioDevice(self.backend, rate=sample_rate)
+        super(PlayerThread, self).__init__()
 
-        buf = stream.read()
-        while buf:
+    def run(self):
+        stream = self.player.getStream(self.song_id)
+
+        mf = mad.MadFile(stream)
+        dev = ao.AudioDevice(self.backend, rate=mf.samplerate())
+
+        buf = mf.read()
+        while buf and not self.stopped():
             dev.play(buf, len(buf))
-            buf = stream.read()
+            buf = mf.read()
 
+        self.player.cur_play = None
 
-class MadDecoder(Decoder):
+    def stop(self):
+        self._stop.set()
 
-    def play(self):
-        mf = mad.MadFile(self.mp3_stream)
-        self._playStream(mf, sample_rate=mf.samplerate())
+    def stopped(self):
+        return self._stop.isSet()
