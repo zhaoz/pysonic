@@ -91,6 +91,8 @@ class PySubCli(object):
         if id_re.match(args[0]):
             self.player.play(song_id=args[0])
 
+    def stop(self, args):
+        self.player.stop()
 
     def execArgs(self, args):
         """Execute commands given on the cli."""
@@ -104,6 +106,8 @@ class PySubCli(object):
             self.dump(args[1:])
         elif cmd == 'play':
             self.play(args[1:])
+        elif cmd == 'stop':
+            self.stop(args[1:])
 
     def exit(self, state):
         # kill any player threads
