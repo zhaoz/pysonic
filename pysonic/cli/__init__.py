@@ -54,7 +54,7 @@ class PySubCli(object):
         elif field == 'song':
             return self.search.search_song(options)
 
-    def dumpEntry(self, args):
+    def dump(self, args):
         """Dump json representation."""
         if not self.cur_list:
             print "No list to operate on."
@@ -70,6 +70,15 @@ class PySubCli(object):
         except ValueError, ex:
             print "Wrong format"
 
+    def play(self, args):
+        """Play something."""
+
+        try:
+            num = int(args[0])
+            self.player.play(self.cur_list[num])
+        except IndexError, ex:
+            print "That's not in the list."
+
     def execArgs(self, args):
         """Execute commands given on the cli."""
         cmd = args[0]
@@ -79,7 +88,9 @@ class PySubCli(object):
         elif cmd == 'relist':
             print self.cur_list
         elif cmd == 'dump':
-            self.dumpEntry(args[1:])
+            self.dump(args[1:])
+        elif cmd == 'play':
+            self.play(args[1:])
 
     def shell(self):
         while True:
