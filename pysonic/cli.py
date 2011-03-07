@@ -22,6 +22,39 @@ def makeArray(obj):
         return [obj,]
     return obj
 
+class SearchList(object):
+
+    def __init__(self, entries):
+        self.entries = makeArray(entries)
+        self.length = len(entries)
+
+    def entryString(self, entry):
+        return str(entry)
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def __unicode__(self):
+        fmt = "%%%dd. %%s" % (len(str(self.length)))
+
+        cnt = 0
+        strings = []
+
+        for entry in self.entries:
+            cnt += 1
+            strings.append(fmt % (cnt, self.entryString(entry)))
+
+        return "\n".join(strings)
+
+class ArtistList(SearchList):
+    def entryString(self, entry):
+        return entry['name']
+
+class SongList(SearchList):
+    def entryString(self, entry):
+        return "%s - %s - %s - %s" % (entry['album'],
+            entry['track'], entry['artist'], entry['title'])
+
 
 class PySubCli(object):
 
@@ -66,28 +99,23 @@ class PySubCli(object):
             cnt += 1
             print fmt % (cnt, string)
 
-
     def search_song(self, options):
         query = {
                 'query': options.song
                 }
 
         result = self.api.call_search2(query=query)
-        songs = makeArray(result['searchResult2']['song'])
-
-        self._print_list(["%s - %s - %s - %s" % (song['album'],
-            song['track'], song['artist'], song['title']) for song in songs])
-
+        songs = SongList(result['searchResult2']['song'])
+        print songs
 
     def search_artist(self, options):
         query = {
                 'query': options.artist
                 }
         result = self.api.call_search2(query=query)
+        artists = ArtistList(result['searchResult2']['artist'])
 
-        artists = makeArray(result['searchResult2']['artist'])
-
-        self._print_list([artist['name'] for artist in artists])
+        print artists
 
     def execArgs(self, args):
         if args[0] == 'search':
