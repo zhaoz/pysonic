@@ -6,6 +6,7 @@ __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
 from optparse import OptionParser
 import readline
 import shlex
+import sys
 
 import simplejson
 
@@ -69,5 +70,9 @@ class PySubCli(object):
             except EOFError, ex:
                 print "\nExiting"
                 break
+            except KeyboardInterrupt, ex:
+                print "\nInteruptted -- Exiting"
+                sys.exit(0)
+
             self.execArgs(shlex.split(raw))
 
