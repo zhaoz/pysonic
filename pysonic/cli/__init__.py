@@ -15,8 +15,6 @@ from pysonic.player import SubPlayer
 
 import commands
 
-instance = None
-
 class PySubCli(object):
 
     def __init__(self, config):
@@ -25,9 +23,6 @@ class PySubCli(object):
         self.player = SubPlayer(subsonic=self.api)
 
         self._cur_list = None
-
-        global instance
-        instance = self
 
         commands.register_all()
 
@@ -38,22 +33,6 @@ class PySubCli(object):
     @cur_list.setter
     def cur_list(self, lst):
         self._cur_list = lst
-
-    def dump(self, args):
-        """Dump json representation."""
-        if not self.cur_list:
-            print "No list to operate on."
-            return
-
-        if len(args) < 1:
-            print repr(self.cur_list)
-            return
-
-        try:
-            num = int(args[0])
-            print pysonic.pretty(self.cur_list[num])
-        except ValueError, ex:
-            print "Wrong format"
 
 
     def play(self, args):
