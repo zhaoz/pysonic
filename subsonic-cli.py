@@ -1,22 +1,20 @@
 #!/usr/bin/python2
 
-from ConfigParser import RawConfigParser
-import os
 import sys
 
+import pysonic
 from pysonic.cli import PySubCli
 
 
 def main():
-    user_config = RawConfigParser()
-    user_config.read("%s/.pysonicrc" % (os.path.expanduser('~')))
 
-    config = {}
+    cfg = pysonic.ReadConfig()
 
-    for name in user_config.options('general'):
-        config[name] = user_config.get('general', name)
+    psc = PySubCli(config=cfg)
 
-    psc = PySubCli(backend=user_config.get('playback', 'backend'), **config)
+    if len(sys.argv) < 2:
+        print "Need to give at least one arg"
+        sys.exit(1)
 
     args = sys.argv[1:]
 

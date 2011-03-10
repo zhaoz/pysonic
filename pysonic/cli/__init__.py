@@ -9,7 +9,7 @@ import readline
 import shlex
 import sys
 
-from pysonic import pretty
+import pysonic
 from pysonic.api import Subsonic
 from pysonic.player import SubPlayer
 from pysonic.cli.search import Search
@@ -17,11 +17,10 @@ from pysonic.cli.search import Search
 
 class PySubCli(object):
 
-    def __init__(self, username=None, password=None, server=None, backend="pulse"):
+    def __init__(self, config):
 
-        self.api = Subsonic(username=username, password=password,
-                server=server)
-        self.player = SubPlayer(subsonic=self.api, backend=backend)
+        self.api = Subsonic(config)
+        self.player = SubPlayer(subsonic=self.api)
         self.search = Search(self.api)
 
         self.cur_list = None
@@ -67,7 +66,7 @@ class PySubCli(object):
 
         try:
             num = int(args[0])
-            print pretty(self.cur_list[num])
+            print pysonic.pretty(self.cur_list[num])
         except ValueError, ex:
             print "Wrong format"
 
@@ -126,4 +125,3 @@ class PySubCli(object):
                 self.exit(0)
 
             self.execArgs(shlex.split(raw))
-

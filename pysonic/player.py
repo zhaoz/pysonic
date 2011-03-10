@@ -13,9 +13,9 @@ from pysonic.api import Subsonic
 
 class SubPlayer(object):
 
-    def __init__(self, subsonic=None, backend="pulse"):
+    def __init__(self, subsonic=None):
         self.sub = subsonic
-        self.backend = backend
+        self.backend = subsonic.config.get('playback', 'backend')
         self.cur_play = None
 
     def getStream(self, song_id):
@@ -42,7 +42,7 @@ class SubPlayer(object):
 
 class PlayerThread(threading.Thread):
 
-    def __init__(self, player, song_id, backend="pulse"):
+    def __init__(self, player, song_id, backend="auto"):
         self.player = player
         self.song_id = song_id
         self.backend = backend

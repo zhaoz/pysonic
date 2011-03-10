@@ -13,16 +13,16 @@ import urlparse
 
 class Subsonic(object):
 
-    def __init__(self, server=None, version="1.5.0", client=None,
-            json=True, username=None, password=None, debug=False):
+    def __init__(self, config, version="1.5.0", json=True, client=None):
 
-        self.uri_parts = urlparse.urlparse(server)
+        self.config = config
+        self.uri_parts = urlparse.urlparse(config.get('general', 'server'))
 
         if not client:
             client = gethostname()
 
-        self.username = (self.uri_parts.username, username)[username != None]
-        self.password = (self.uri_parts.password, password)[password != None]
+        self.username = config.get('general', 'username')
+        self.password = config.get('general', 'password')
 
         self.base_url = urlparse.urlunsplit(
                 urlparse.SplitResult(self.uri_parts.scheme, self.uri_parts.netloc,
@@ -36,7 +36,7 @@ class Subsonic(object):
                     'p': self.password
                 }
 
-        self.debug = debug
+        self.debug = config.get('general', 'debug')
 
         # WHY YOU STILL WORK!?
         #self._init_opener()
