@@ -34,44 +34,10 @@ class PySubCli(object):
     def cur_list(self, lst):
         self._cur_list = lst
 
-
-    def play(self, args):
-        """Play something."""
-
-        try:
-            num = int(args[0]) - 1
-            self.player.play(self.cur_list[num])
-            return
-        except IndexError, ex:
-            print "That's not in the list."
-            return
-        except ValueError, ex:
-            # don't care about this
-            pass
-
-        # maybe its an ID?
-        id_re = re.compile(r'^[a-f0-9]+$')
-
-        if id_re.match(args[0]):
-            self.player.play(song_id=args[0])
-
-    def stop(self, args):
-        self.player.stop()
-
     def execArgs(self, args):
         """Execute commands given on the cli."""
         cmd = command.find(args)
-
         cmd(self, args)
-
-        #elif cmd == 'relist':
-            #print self.cur_list
-        #elif cmd == 'dump':
-            #self.dump(args[1:])
-        #elif cmd == 'play':
-            #self.play(args[1:])
-        #elif cmd == 'stop':
-            #self.stop(args[1:])
 
     def exit(self, state):
         # kill any player threads
