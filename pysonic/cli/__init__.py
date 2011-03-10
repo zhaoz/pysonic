@@ -12,8 +12,10 @@ import sys
 import pysonic
 from pysonic.api import Subsonic
 from pysonic.player import SubPlayer
-from pysonic.cli.search import Search
 
+import commands
+
+instance = None
 
 class PySubCli(object):
 
@@ -21,38 +23,21 @@ class PySubCli(object):
 
         self.api = Subsonic(config)
         self.player = SubPlayer(subsonic=self.api)
-        self.search = Search(self.api)
 
-        self.cur_list = None
+        self._cur_list = None
 
-    def searchArgs(self, args):
-        parser = OptionParser()
+        global instance
+        instance = self
 
-        parser.add_option('-a', '--artist', dest='artist')
-        parser.add_option('-s', '--song', dest='song')
-        parser.add_option('-b', '--album', dest='album')
+        commands.register_all()
 
-        search_by = 'song'
+    @property
+    def cur_list(self):
+        return self._cur_list
 
-        for name in ('artist', 'song'):
-            if args[0] == name:
-                parser.remove_option('--%s' % name)
-                search_by = args.pop(0)
-                kwargs = {}
-                kwargs[name] = args.pop(0)
-                parser.set_defaults(**kwargs)
-                break
-
-        (options, args) = parser.parse_args(args=args)
-
-        self.cur_list = self.getList(search_by, options)
-        print self.cur_list
-
-    def getList(self, field, options):
-        if field == 'artist':
-            return self.search.search_artist(options)
-        elif field == 'song':
-            return self.search.search_song(options)
+    @cur_list.setter
+    def cur_list(self, lst):
+        self._cur_list = lst
 
     def dump(self, args):
         """Dump json representation."""
@@ -69,6 +54,7 @@ class PySubCli(object):
             print pysonic.pretty(self.cur_list[num])
         except ValueError, ex:
             print "Wrong format"
+
 
     def play(self, args):
         """Play something."""
@@ -95,18 +81,21 @@ class PySubCli(object):
 
     def execArgs(self, args):
         """Execute commands given on the cli."""
-        cmd = args[0]
+        cmd = commands.find(args)
 
-        if cmd == 'search':
-            self.searchArgs(args[1:])
-        elif cmd == 'relist':
-            print self.cur_list
-        elif cmd == 'dump':
-            self.dump(args[1:])
-        elif cmd == 'play':
-            self.play(args[1:])
-        elif cmd == 'stop':
-            self.stop(args[1:])
+        cmd(self.api, args)
+
+
+        #if cmd == 'search':
+            #self.searchArgs(args[1:])
+        #elif cmd == 'relist':
+            #print self.cur_list
+        #elif cmd == 'dump':
+            #self.dump(args[1:])
+        #elif cmd == 'play':
+            #self.play(args[1:])
+        #elif cmd == 'stop':
+            #self.stop(args[1:])
 
     def exit(self, state):
         # kill any player threads
