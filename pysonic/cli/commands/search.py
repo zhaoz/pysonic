@@ -6,8 +6,6 @@ __author__ = 'Ziling Zhao <zilingzhao@gmail.com>'
 
 from optparse import OptionParser
 
-import pysonic.cli as cli
-
 from pysonic.cli.commands import command
 import pysonic.cli.commands.base as base
 from pysonic.cli.search import Search
@@ -19,15 +17,16 @@ class SearchCommand(base.BaseCommand):
     def __init__(self):
         self._inited = False
 
-    def _real_init(self, api):
+    def _real_init(self, cli):
         if self._inited:
             return
 
-        self.api = api
+        self.cli = cli
+        self.api = cli.api
         self.search = Search(self.api)
 
-    def __call__(self, api, args):
-        self._real_init(api)
+    def __call__(self, cli, args):
+        self._real_init(cli)
 
         cmd = args[0]
         self.searchArgs(args[1:])
@@ -53,7 +52,7 @@ class SearchCommand(base.BaseCommand):
         (options, args) = parser.parse_args(args=args)
 
         lst = self.getList(search_by, options)
-        cli.instance.cur_list = lst
+        self.cli.cur_list = lst
         print lst
 
     def getList(self, field, options):

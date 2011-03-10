@@ -83,11 +83,8 @@ class PySubCli(object):
         """Execute commands given on the cli."""
         cmd = commands.find(args)
 
-        cmd(self.api, args)
+        cmd(self, args)
 
-
-        #if cmd == 'search':
-            #self.searchArgs(args[1:])
         #elif cmd == 'relist':
             #print self.cur_list
         #elif cmd == 'dump':
