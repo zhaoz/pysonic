@@ -6,8 +6,8 @@ __author__ = 'Ziling Zhao <zilingzhao@gmail.com>'
 
 from optparse import OptionParser
 
-from pysonic.cli.commands import command
-import pysonic.cli.commands.base as base
+from pysonic.cli.command import command
+import pysonic.cli.command.base as base
 from pysonic.cli.search import Search
 
 @command

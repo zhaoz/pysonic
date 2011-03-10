@@ -13,7 +13,7 @@ import pysonic
 from pysonic.api import Subsonic
 from pysonic.player import SubPlayer
 
-import commands
+import command
 
 class PySubCli(object):
 
@@ -24,7 +24,7 @@ class PySubCli(object):
 
         self._cur_list = None
 
-        commands.register_all()
+        command.register_all()
 
     @property
     def cur_list(self):
@@ -60,7 +60,7 @@ class PySubCli(object):
 
     def execArgs(self, args):
         """Execute commands given on the cli."""
-        cmd = commands.find(args)
+        cmd = command.find(args)
 
         cmd(self, args)
 

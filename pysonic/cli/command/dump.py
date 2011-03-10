@@ -4,8 +4,8 @@
 __author__ = 'Ziling Zhao <zilingzhao@gmail.com>'
 
 import pysonic
-from pysonic.cli.commands import command
-import pysonic.cli.commands.base as base
+from pysonic.cli.command import command
+import pysonic.cli.command.base as base
 
 @command
 class DumpCommand(base.BaseCommand):
