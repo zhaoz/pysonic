@@ -38,7 +38,7 @@ class SearchCommand(base.BaseCommand):
         parser.add_option('-s', '--song', dest='song')
         parser.add_option('-b', '--album', dest='album')
 
-        search_by = 'song'
+        search_by = None
 
         for name in ('artist', 'song'):
             if args[0] == name:
@@ -48,6 +48,10 @@ class SearchCommand(base.BaseCommand):
                 kwargs[name] = args.pop(0)
                 parser.set_defaults(**kwargs)
                 break
+
+        if not search_by:
+            print "Don't understand"
+            return
 
         (options, args) = parser.parse_args(args=args)
 
