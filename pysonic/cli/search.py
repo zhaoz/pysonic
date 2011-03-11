@@ -18,6 +18,13 @@ class Search(object):
     def __init__(self, api):
         self.api = api
 
+    def _getList(self, item, key):
+        if type(item) is dict:
+            return item[key]
+
+        return []
+
+
     def search_song(self, options):
         qs = [options.song,]
 
@@ -31,7 +38,7 @@ class Search(object):
                 }
 
         result = self.api.call_search2(query=query)
-        songs = SongList(result['searchResult2']['song'])
+        songs = SongList(self._getList(result['searchResult2'], 'song'))
 
         return songs
 
@@ -40,8 +47,8 @@ class Search(object):
                 'query': options.artist
                 }
         result = self.api.call_search2(query=query)
-        print result
-        artists = ArtistList(result['searchResult2']['artist'])
+
+        artists = ArtistList(self._getList(result['searchResult2'], 'artist'))
         return artists
 
 unicode_re = re.compile(r'&#[0-9]{1,7};')
@@ -53,7 +60,7 @@ class SearchList(object):
         self.length = len(self.entries)
 
     def entryString(self, entry):
-        return str(entry)
+        return unicode(entry)
 
     def __str__(self):
         return self.__unicode__()
@@ -65,11 +72,7 @@ class SearchList(object):
         strings = []
 
         def replacer(s):
-            #print dir(s)
-            #print s.group()
-            #lambda s: unichr(int(s[2:-1])),
             word = s.group()
-
             return unichr(int(word[2:-1]))
 
         for entry in self.entries:
