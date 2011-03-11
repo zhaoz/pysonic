@@ -61,6 +61,7 @@ class SearchCommand(base.BaseCommand):
         elif field == 'song':
             return self.search.search_song(options)
 
+
 @command
 class RelistCommand(base.BaseCommand):
     COMMANDS = ['relist']

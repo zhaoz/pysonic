@@ -1,6 +1,8 @@
 """pysonic library.
 """
 
+import re
+
 from pysonic import pretty
 
 __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
@@ -38,9 +40,11 @@ class Search(object):
                 'query': options.artist
                 }
         result = self.api.call_search2(query=query)
+        print result
         artists = ArtistList(result['searchResult2']['artist'])
         return artists
 
+unicode_re = re.compile(r'&#[0-9]{1,7};')
 
 class SearchList(object):
 
@@ -55,16 +59,28 @@ class SearchList(object):
         return self.__unicode__()
 
     def __unicode__(self):
-        fmt = "%%%dd. %%s" % (len(str(self.length)))
+        fmt = u"%%%dd. %%s" % (len(str(self.length)))
 
         cnt = 0
         strings = []
 
+        def replacer(s):
+            #print dir(s)
+            #print s.group()
+            #lambda s: unichr(int(s[2:-1])),
+            word = s.group()
+
+            return unichr(int(word[2:-1]))
+
         for entry in self.entries:
             cnt += 1
-            strings.append(fmt % (cnt, self.entryString(entry)))
+            encoded_str = unicode_re.sub(
+                    replacer,
+                    unicode(self.entryString(entry))
+                    )
+            strings.append(fmt % (cnt, encoded_str))
 
-        return "\n".join(strings)
+        return u"\n".join(strings).encode('utf-8')
 
     def __repr__(self):
         return pretty(self.entries)
@@ -78,11 +94,11 @@ class SearchList(object):
 
 class ArtistList(SearchList):
     def entryString(self, entry):
-        return entry['name']
+        return unicode(entry['name'])
 
 
 class SongList(SearchList):
     def entryString(self, entry):
-        return "%s - %s - %s - %s" % (entry['album'],
-            entry['track'], entry['artist'], entry['title'])
+        return u"%s - %s - %s - %s" % (entry['album'], entry['track'],
+                entry['artist'], entry['title'])
 

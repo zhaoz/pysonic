@@ -3,6 +3,8 @@
 
 __author__ = 'Ziling Zhao <zilingzhao@gmail.com>'
 
+import re
+
 from pysonic.cli.command import command
 import pysonic.cli.command.base as base
 

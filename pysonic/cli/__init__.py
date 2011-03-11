@@ -3,8 +3,6 @@
 
 __author__ = 'Ziling Zhao <zilingzhao@gmail.coM>'
 
-from optparse import OptionParser
-import re
 import readline
 import shlex
 import sys
@@ -14,6 +12,7 @@ from pysonic.api import Subsonic
 from pysonic.player import SubPlayer
 
 import command
+
 
 class PySubCli(object):
 
